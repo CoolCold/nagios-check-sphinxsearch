@@ -14,8 +14,9 @@
 use strict;
 use Sphinx::Search;
 use Getopt::Long;
+Getopt::Long::Configure("bundling");
 
-use vars qw($opt_w $opt_c $opt_h $opt_q $opt_H $opt_t %ERRORS $sph $results);
+use vars qw($opt_w $opt_c $opt_h $opt_q $opt_H $opt_t $opt_p %ERRORS $sph $results);
 
 my %ERRORS = ('UNKNOWN' , '-1',
               'OK' , '0',
@@ -42,7 +43,7 @@ alarm($opt_t);
 
 $sph = Sphinx::Search->new();
 
-$sph->SetServer($opt_H, '9312');
+$sph->SetServer($opt_H, $opt_p);
 $sph->SetLimits(0, 0);
 $sph->SetMaxQueryTime($opt_t);
 $sph->SetRankingMode(SPH_RANK_NONE);
@@ -80,7 +81,8 @@ sub process_arguments(){
                  "c=i" => \$opt_c, "critical=i" => \$opt_c,       # critical
                  "q=s" => \$opt_q, "query=s" => \$opt_q,       # Query for searching
                  "t=i" => \$opt_t, "timeout=i" => \$opt_t,       # Global timeout
-                 "H=s" => \$opt_H, "host=s" => \$opt_H       # Hostname
+                 "H=s" => \$opt_H, "host=s" => \$opt_H,       # Hostname
+                 "p=s" => \$opt_p, "port=i" => \$opt_p       # Hostname
                  );
 
         if ($opt_h) {
@@ -108,6 +110,10 @@ sub process_arguments(){
         unless (defined $opt_H) {
                 $opt_H = "127.0.0.1" ;      # default host
         }
+        
+        unless (defined $opt_p) {
+                $opt_p = 9312 ;      # default port
+        }
 
 
 return $ERRORS{'OK'};
@@ -123,7 +129,7 @@ sub print_help () {
         print_usage();
         print "\n";
         print "   Checks the number of founded results for query\n";
-        print "   Connect to host server and port 9312.\n";
+        print "   Connect to host server and port.\n";
         print "   Ask for query on all indexes and use total founded.\n";
         print "   If CRITICAL are less then total founded, then CRITICAL.\n";
         print "   If WARNING are less then total founded, then WARNING.\n";
@@ -132,6 +138,7 @@ sub print_help () {
         print "-c (--critical)  = Min. number of results in queue to generate critical alert ( w > c )\n";
         print "-q (--query) = 'Prague' by default\n";
         print "-H (--host) = Server name or IP(default 127.0.0.1)\n";
+        print "-p (--port) = Server port (default 9312)\n";
         print "-t (--timeout)  = Set server connection timeout(1000 by default).\n";
         print "-h (--help)\n";
         print "\n\n"; 

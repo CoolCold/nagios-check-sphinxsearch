@@ -57,3 +57,5 @@ define service {
   notification_interval           0
 }
 ```
+Packages on Debian 8:
+```apt-get install libsphinx-search-perl```
